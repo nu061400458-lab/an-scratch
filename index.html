@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+
+<title>
+スクラッチゲーム
+</title>
+
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<main class="app">
+
+
+<!-- ==========================
+     タイトル
+========================== -->
+
+
+<header class="header">
+
+
+<h1>
+スクラッチゲーム
+</h1>
+
+
+<p id="subtitle">
+しゃしんをえらんでね！
+</p>
+
+
+</header>
+
+
+
+
+
+
+
+
+<!-- ==========================
+     アップロード画面
+
+     初期表示
+
+========================== -->
+
+
+<section
+id="uploadArea"
+class="upload-area">
+
+
+<label class="upload-button">
+
+
+📁 しゃしんをえらぶ
+
+
+<input
+
+type="file"
+
+id="imageInput"
+
+accept="image/*"
+
+>
+
+
+</label>
+
+
+
+
+
+<label class="upload-button">
+
+
+📷 カメラでとる
+
+
+<input
+
+type="file"
+
+id="cameraInput"
+
+accept="image/*"
+
+capture="environment"
+
+>
+
+
+</label>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- ==========================
+     スクラッチ画面
+
+     初期非表示
+
+========================== -->
+
+
+<section
+
+id="gameArea"
+
+class="game-area"
+
+hidden>
+
+
+
+<p
+
+id="instruction">
+
+こすってみよう！
+
+</p>
+
+
+
+
+
+<div
+
+class="canvas-container">
+
+
+
+<canvas
+
+id="imageCanvas">
+
+</canvas>
+
+
+
+
+
+<canvas
+
+id="scratchCanvas">
+
+</canvas>
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+<!-- ==========================
+     メッセージ表示
+
+========================== -->
+
+
+<div
+
+id="message"
+
+class="message">
+
+</div>
+
+
+
+
+
+
+
+
+<!-- ==========================
+     操作ボタン
+
+========================== -->
+
+
+<div
+
+class="button-area">
+
+
+
+
+
+<button
+
+id="resetButton"
+
+class="reset-button"
+
+hidden>
+
+
+もういちど
+
+
+</button>
+
+
+
+
+
+
+
+<button
+
+id="resetUploadButton"
+
+class="back-button"
+
+hidden>
+
+
+しゃしんをえらびなおす
+
+
+</button>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</main>
+
+
+
+
+
+
+
+<script src="script.js"></script>
+
+
+</body>
+
+
+</html>
