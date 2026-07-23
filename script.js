@@ -6,14 +6,12 @@
 
  1/3
 
+ ・初期設定
  ・状態管理
- ・DOM取得
- ・イベント設定
  ・画像読み込み
 
 =====================================
 */
-
 
 
 /*
@@ -29,10 +27,6 @@ const uploadArea =
 
 const imageInput =
   document.getElementById("imageInput");
-
-
-const cameraInput =
-  document.getElementById("cameraInput");
 
 
 const gameArea =
@@ -68,10 +62,10 @@ const resetUploadButton =
 
 
 
-
 /*
 =====================================
- Canvas取得
+ Canvas
+
 =====================================
 */
 
@@ -90,10 +84,10 @@ const scratchContext =
 
 
 
+
 /*
 =====================================
- ゲーム状態
-
+ 状態管理
 =====================================
 */
 
@@ -102,16 +96,19 @@ const GAME_STATE = {
 
 
   BEFORE_UPLOAD:
+
     "before-upload",
 
 
 
   SCRATCHING:
+
     "scratching",
 
 
 
   COMPLETE:
+
     "complete"
 
 
@@ -122,7 +119,9 @@ const GAME_STATE = {
 
 
 let currentState =
+
   GAME_STATE.BEFORE_UPLOAD;
+
 
 
 
@@ -133,8 +132,7 @@ let currentState =
 
 /*
 =====================================
- データ
-
+ ゲームデータ
 =====================================
 */
 
@@ -142,11 +140,12 @@ let currentState =
 let loadedImage = null;
 
 
+
 let isScratching = false;
 
 
-let scratchEnabled = false;
 
+let scratchEnabled = false;
 
 
 
@@ -157,14 +156,19 @@ const canvasSize = 500;
 
 
 
+
+
+
 /*
  幼児向けブラシサイズ
 
- 50px程度が最も扱いやすい
+ 指で操作しやすい大きさ
 
 */
 
+
 const brushSize = 55;
+
 
 
 
@@ -174,6 +178,7 @@ const brushSize = 55;
  70%削れたら完成
 
 */
+
 
 const completeRate = 0.7;
 
@@ -187,13 +192,16 @@ const completeRate = 0.7;
 
 /*
 =====================================
- 初期化
+ 初期状態
+
 =====================================
 */
 
 
 setGameState(
+
   GAME_STATE.BEFORE_UPLOAD
+
 );
 
 
@@ -212,16 +220,6 @@ setGameState(
 
 
 imageInput.addEventListener(
-
-  "change",
-
-  loadImage
-
-);
-
-
-
-cameraInput.addEventListener(
 
   "change",
 
@@ -263,8 +261,7 @@ resetUploadButton.addEventListener(
 
 /*
 =====================================
- 状態変更
-
+ 表示状態変更
 =====================================
 */
 
@@ -280,67 +277,40 @@ function setGameState(state){
 
 
 
-  if(
-    state === GAME_STATE.BEFORE_UPLOAD
-  ){
+
+  switch(state){
 
 
 
-    uploadArea.hidden = false;
+    case GAME_STATE.BEFORE_UPLOAD:
 
 
 
-    gameArea.hidden = true;
+      uploadArea.hidden = false;
 
 
 
-    resetButton.hidden = true;
+      gameArea.hidden = true;
 
 
 
-    resetUploadButton.hidden = true;
+      resetButton.hidden = true;
 
 
 
-    instruction.textContent = "";
+      resetUploadButton.hidden = true;
 
 
 
-    message.textContent = "";
+      instruction.textContent = "";
 
 
 
-  }
+      message.textContent = "";
 
 
 
-
-
-
-
-  if(
-    state === GAME_STATE.SCRATCHING
-  ){
-
-
-
-    uploadArea.hidden = true;
-
-
-
-    gameArea.hidden = false;
-
-
-
-    resetButton.hidden = true;
-
-
-
-    resetUploadButton.hidden = false;
-
-
-
-  }
+      break;
 
 
 
@@ -348,25 +318,55 @@ function setGameState(state){
 
 
 
-  if(
-    state === GAME_STATE.COMPLETE
-  ){
+    case GAME_STATE.SCRATCHING:
 
 
 
-    uploadArea.hidden = true;
+      uploadArea.hidden = true;
 
 
 
-    gameArea.hidden = false;
+      gameArea.hidden = false;
 
 
 
-    resetButton.hidden = false;
+      resetButton.hidden = true;
 
 
 
-    resetUploadButton.hidden = false;
+      resetUploadButton.hidden = false;
+
+
+
+      break;
+
+
+
+
+
+
+
+    case GAME_STATE.COMPLETE:
+
+
+
+      uploadArea.hidden = true;
+
+
+
+      gameArea.hidden = false;
+
+
+
+      resetButton.hidden = false;
+
+
+
+      resetUploadButton.hidden = false;
+
+
+
+      break;
 
 
 
@@ -387,7 +387,6 @@ function setGameState(state){
 /*
 =====================================
  画像読み込み
-
 =====================================
 */
 
@@ -397,7 +396,9 @@ function loadImage(event){
 
 
   const file =
+
     event.target.files[0];
+
 
 
 
@@ -414,13 +415,20 @@ function loadImage(event){
 
 
 
+
+
   if(
+
     !file.type.startsWith("image/")
+
   ){
 
 
+
     message.textContent =
+
       "画像を選んでください";
+
 
 
     return;
@@ -435,7 +443,9 @@ function loadImage(event){
 
 
   const reader =
+
     new FileReader();
+
 
 
 
@@ -448,7 +458,9 @@ function loadImage(event){
 
 
     const image =
+
       new Image();
+
 
 
 
@@ -466,11 +478,6 @@ function loadImage(event){
 
 
 
-      /*
-      Canvas準備
-
-      */
-
       setupCanvas();
 
 
@@ -478,22 +485,12 @@ function loadImage(event){
 
 
 
-      /*
-      画像描画
-
-      */
-
       drawImage();
 
 
 
 
 
-
-      /*
-      銀作成
-
-      */
 
       createScratchLayer();
 
@@ -503,15 +500,19 @@ function loadImage(event){
 
 
       /*
-      重要
+      画像読み込み完了後
 
-      画像読み込み完了後に表示
+      ここで画面切替
 
       */
 
+
       setGameState(
+
         GAME_STATE.SCRATCHING
+
       );
+
 
 
 
@@ -523,8 +524,11 @@ function loadImage(event){
 
 
 
+
       instruction.textContent =
+
         "こすってみよう！";
+
 
 
 
@@ -542,11 +546,13 @@ function loadImage(event){
 
 
 
+
     image.onerror = function(){
 
 
 
       message.textContent =
+
         "画像を読み込めませんでした";
 
 
@@ -558,7 +564,10 @@ function loadImage(event){
 
 
 
+
+
     image.src =
+
       e.target.result;
 
 
@@ -579,8 +588,7 @@ function loadImage(event){
 
 /*
 =====================================
- Canvas設定
-
+ Canvas初期化
 =====================================
 */
 
@@ -618,10 +626,7 @@ function setupCanvas(){
 
 /*
 =====================================
- 画像描画
-
- 画像を正方形内にフィット
-
+ 元画像描画
 =====================================
 */
 
@@ -646,7 +651,6 @@ function drawImage(){
 
 
 
-
   if(!loadedImage){
 
     return;
@@ -658,6 +662,11 @@ function drawImage(){
 
 
 
+
+  /*
+    画像を正方形に収める
+
+  */
 
 
   const scale = Math.max(
@@ -673,8 +682,7 @@ function drawImage(){
 
 
 
-
-  const drawWidth =
+  const width =
 
     loadedImage.width * scale;
 
@@ -682,7 +690,7 @@ function drawImage(){
 
 
 
-  const drawHeight =
+  const height =
 
     loadedImage.height * scale;
 
@@ -694,7 +702,8 @@ function drawImage(){
 
   const x =
 
-    (canvasSize - drawWidth) / 2;
+    (canvasSize - width) / 2;
+
 
 
 
@@ -702,7 +711,7 @@ function drawImage(){
 
   const y =
 
-    (canvasSize - drawHeight) / 2;
+    (canvasSize - height) / 2;
 
 
 
@@ -718,9 +727,9 @@ function drawImage(){
 
     y,
 
-    drawWidth,
+    width,
 
-    drawHeight
+    height
 
   );
 
@@ -739,7 +748,6 @@ function drawImage(){
 /*
 =====================================
  銀スクラッチ作成
-
 =====================================
 */
 
@@ -820,7 +828,7 @@ function createScratchLayer(){
 
     0.7,
 
-    "#f5f5f5"
+    "#f8f8f8"
 
   );
 
@@ -871,14 +879,15 @@ function createScratchLayer(){
 
 
   /*
-    銀の光沢
+    銀の光沢表現
 
   */
 
 
   scratchContext.globalAlpha =
 
-    0.25;
+    0.2;
+
 
 
 
@@ -893,12 +902,11 @@ function createScratchLayer(){
 
 
 
-
   for(
 
     let i = 0;
 
-    i < 25;
+    i < 30;
 
     i++
 
@@ -912,12 +920,11 @@ function createScratchLayer(){
 
       Math.random() * canvasSize,
 
-      100,
+      80,
 
-      4
+      5
 
     );
-
 
 
   }
@@ -933,8 +940,6 @@ function createScratchLayer(){
 
 
 
-
-
 }
 
 
@@ -947,8 +952,7 @@ function createScratchLayer(){
 
 /*
 =====================================
- スクラッチ操作登録
-
+ スクラッチ操作有効化
 =====================================
 */
 
@@ -962,6 +966,8 @@ function enableScratch(){
     return;
 
   }
+
+
 
 
 
@@ -984,6 +990,7 @@ function enableScratch(){
 
 
 
+
   scratchCanvas.addEventListener(
 
     "pointermove",
@@ -996,6 +1003,7 @@ function enableScratch(){
 
 
 
+
   scratchCanvas.addEventListener(
 
     "pointerup",
@@ -1003,6 +1011,7 @@ function enableScratch(){
     endScratch
 
   );
+
 
 
 
@@ -1031,7 +1040,6 @@ function enableScratch(){
 /*
 =====================================
  削り開始
-
 =====================================
 */
 
@@ -1056,8 +1064,8 @@ function startScratch(event){
 
 
 
-
   isScratching = true;
+
 
 
 
@@ -1114,8 +1122,6 @@ function moveScratch(event){
 
 
 
-
-
 }
 
 
@@ -1128,7 +1134,7 @@ function moveScratch(event){
 
 /*
 =====================================
- 終了
+ 削り終了
 
 =====================================
 */
@@ -1146,7 +1152,11 @@ function endScratch(){
 
 
 
+
+
   isScratching = false;
+
+
 
 
 
@@ -1167,7 +1177,7 @@ function endScratch(){
 
 /*
 =====================================
- 削る処理
+ 銀を削る処理
 
 =====================================
 */
@@ -1179,8 +1189,9 @@ function eraseArea(event){
 
   const rect =
 
-    scratchCanvas.getBoundingClientRect();
+    scratchCanvas
 
+      .getBoundingClientRect();
 
 
 
@@ -1189,7 +1200,7 @@ function eraseArea(event){
 
 
   /*
-    表示サイズとCanvasサイズの差を補正
+    表示サイズとの差を補正
 
   */
 
@@ -1246,8 +1257,10 @@ function eraseArea(event){
 
 
 
+
+
   /*
-    描いた場所を透明化
+    削った部分を透明化
 
   */
 
@@ -1255,7 +1268,6 @@ function eraseArea(event){
   scratchContext.globalCompositeOperation =
 
     "destination-out";
-
 
 
 
@@ -1306,8 +1318,7 @@ function eraseArea(event){
 
 /*
 =====================================
- スクラッチ進行確認
-
+ 削れた割合チェック
 =====================================
 */
 
@@ -1335,7 +1346,6 @@ function checkScratchProgress(){
 
 
 
-
   const pixels =
 
     imageData.data;
@@ -1353,9 +1363,7 @@ function checkScratchProgress(){
 
 
   /*
-    alpha値0の場所を数える
-
-    透明 = 削った部分
+    alpha値が0なら削れた部分
 
   */
 
@@ -1432,7 +1440,6 @@ function checkScratchProgress(){
 
 
 
-
   if(
 
     progress >= completeRate
@@ -1462,7 +1469,6 @@ function checkScratchProgress(){
 /*
 =====================================
  完成処理
-
 =====================================
 */
 
@@ -1536,6 +1542,7 @@ function completeGame(){
 
 
 
+
   scratchCanvas.style.opacity =
 
     "0";
@@ -1555,8 +1562,6 @@ function completeGame(){
 /*
 =====================================
  もういちど遊ぶ
-
- 同じ画像で再挑戦
 
 =====================================
 */
@@ -1591,9 +1596,13 @@ function restartGame(){
 
 
 
+
+
   scratchCanvas.style.opacity =
 
     "1";
+
+
 
 
 
@@ -1671,8 +1680,9 @@ function resetGame(){
 
 
 
+
   /*
-    Canvas削除
+    Canvasクリア
 
   */
 
@@ -1713,9 +1723,8 @@ function resetGame(){
 
 
 
-
   /*
-    ファイル入力解除
+    ファイル選択リセット
 
   */
 
@@ -1724,10 +1733,6 @@ function resetGame(){
 
 
 
-  cameraInput.value = "";
-
-
-
 
 
 
@@ -1735,7 +1740,7 @@ function resetGame(){
 
 
   /*
-    スタイルリセット
+    見た目リセット
 
   */
 
@@ -1747,10 +1752,10 @@ function resetGame(){
 
 
 
+
   scratchCanvas.style.transition =
 
     "none";
-
 
 
 
